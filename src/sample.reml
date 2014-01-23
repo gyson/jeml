@@ -1,0 +1,12 @@
+
+html: [
+	head: [
+		h1: "name"
+		h2: "ok"
+	]
+	body: [
+		"I am good"
+		"okkk"
+	]
+]
+
