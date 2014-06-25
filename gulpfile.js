@@ -24,9 +24,8 @@ var jeml = require('gulp-jeml');
 var beautify = require('gulp-beautify');
 
 gulp.task('compile', function () {
-    gulp.src('./dev/*.jeml')
+    gulp.src(["./example/*.jeml"])
         .pipe(jeml())
         .pipe(beautify({ indentSize: 4 }))
-        .pipe(gulp.dest('./dev/'));
+        .pipe(gulp.dest('./example/'));
 });
-

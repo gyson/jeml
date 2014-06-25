@@ -1,0 +1,23 @@
+
+
+import layout "./layout" // import default mixin from layout.jeml
+
+default {
+    `layout("I am title", body())`
+}
+
+mixin body {
+    p: "I am body"
+}
+
+export myname (a1, a2) {
+	p: `true ? "I am true" : "I am false"`
+
+	tag: `name([1, 2, 3])`
+
+	mixin name (list) {
+		for number in `list` {
+			p: `number`
+		}
+	}
+}

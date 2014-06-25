@@ -18,7 +18,7 @@
   "homepage": "https://github.com/gyson/jeml",
   "devDependencies": {
     "gulp": "^3.8.1",
-    "gulp-jeml": "^0.0.1",
+    "gulp-jeml": "*",
     "gulp-jison": "^1.0.0",
     "gulp-nodemon": "^1.0.4",
     "gulp-beautify": "^1.1.0"

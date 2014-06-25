@@ -1,0 +1,77 @@
+
+
+import layout "./layout"
+import layout from "./layout" // from is optional
+
+import { ffff } "./some_module"
+import { ffff } from "./some_module"
+
+//import { default as abc, okk as ff } "./abcdefg"
+
+default (title, body) {
+	html: {
+		head: {
+			title: `title`
+		}
+		`body`
+	}
+}
+
+mixin body {
+	p: "lkk"
+}
+
+export name (abc, efg) {}
+export mixin name (abc, efg) {}
+
+
+mixin eg_for {
+	for index: value in `xxx` {
+
+	}
+
+	for value in `expression` {
+
+	}
+
+	// while loop
+	for `expression` {
+
+	}
+
+	% var users = [
+	%	  { name: "okk", number: "good" },
+	%	  { name: "kaka", number: "ddd" }
+	% ]
+
+	for user in `users` {
+		p: { "User name: " `user.name` }
+		p: { "User number: " `user.number` }
+	}
+}
+
+mixin eg_if {
+
+	if `x > 10` {
+
+	} else if `x > 5` {
+
+	} else `x > 0` { // if is optional
+
+	} else {
+
+	}
+}
+
+mixin nested_mixin (users) {
+
+	for user in `users` {
+		// call mixin
+		`show_user()`
+
+		mixin show_user {
+			p: { "User name: " `user.name` }
+			p: { "User number: " `user.number` }
+		}
+	}
+}

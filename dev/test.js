@@ -50,6 +50,10 @@ exports['name2'] = name2;
 function name2(a1, a2) {
     var __l = [],
         __p = [].push.bind(__l);
+    __p('<okk');
+    __p('>');
+    __p('dd');
+    __p('</okk>');
     return __l.join('');
 }
 module.exports = (function () {
