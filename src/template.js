@@ -440,8 +440,8 @@ var appendHead = "var __each = function(obj, iterator) {                        
 
 // append to the end of each template
 var appendTail = "module.exports = (function () {                  "
-               + "    if (exports.default) {                       "
-               + "        var e = exports.default;                 "
+               + "    if (exports['default']) {                    "
+               + "        var e = exports['default'];              "
                + "        __each(exports, function (value, name) { "
                + "            e[name] = value;                     "
                + "        });                                      "
@@ -466,7 +466,7 @@ function createForNode (args, exp, body) {
 }
 
 function createExportNode (exportName, scopeName, args, body) {
-    return "exports." + exportName + "=" + scopeName + ";"
+    return "exports['" + exportName + "']=" + scopeName + ";"
          + createMixinNode(scopeName, args, body);
 }
 
