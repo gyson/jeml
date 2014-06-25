@@ -55,9 +55,7 @@
 // OuterNodeList
 Template
     : OuterNodeList EOF {
-        $1 = appendHead + $1 + appendTail;
-        //print_with_beauty($1);
-        return beautify($1);
+        return appendHead + $1 + appendTail;
       }
     ;
 
@@ -321,12 +319,6 @@ RawExpression
     ;
 
 %%
-
-var beautify = require('js-beautify');
-
-function print_with_beauty (script) {
-    console.log(beautify(script, { indent_size: 4}));
-};
 
 function replaceEscapeCharacters (str) {
     return str.replace(/&/g, '&amp;')

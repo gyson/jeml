@@ -32,3 +32,10 @@ in `view.jeml`:
     mixin body {
         p: "I am body"
     }
+
+## TODO
+
+* command line tool
+* tests
+* bench
+* performance optimization (may use some libs from js side)

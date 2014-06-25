@@ -84,9 +84,7 @@ performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* actio
 var $0 = $$.length - 1;
 switch (yystate) {
 case 1:
-        $$[$0-1] = appendHead + $$[$0-1] + appendTail;
-        //print_with_beauty($$[$0-1]);
-        return beautify($$[$0-1]);
+        return appendHead + $$[$0-1] + appendTail;
       
 break;
 case 2: this.$ = $$[$0] 
@@ -404,12 +402,6 @@ parse: function parse(input) {
     return true;
 }};
 
-
-var beautify = require('js-beautify');
-
-function print_with_beauty (script) {
-    console.log(beautify(script, { indent_size: 4}));
-};
 
 function replaceEscapeCharacters (str) {
     return str.replace(/&/g, '&amp;')
