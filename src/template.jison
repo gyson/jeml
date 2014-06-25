@@ -22,8 +22,10 @@
 "if"                       return 'IF'
 "else"                     return 'ELSE'
 "mixin"                    return 'MIXIN'
+"from"                     return 'FROM'
+"as"                       return 'AS'
 
-[a-zA-Z][a-zA-Z0-9]*       return 'NAME'
+[a-zA-Z_$][a-zA-Z_$0-9]*   return 'NAME'
 
 ","                        return ','
 ":"                        return ':'
@@ -33,6 +35,7 @@
 "}"                        return '}'
 "="                        return '='
 "!"                        return '!'
+"%"                        return '%'
 
 <<EOF>>                    return 'EOF'
 
@@ -44,31 +47,23 @@
 
 %%
 
+
+/*
+
+
+*/
 // OuterNodeList
 Template
-    : NodeList EOF            { return finalResult("", $1); }
-    | ImportList NodeList EOF { return finalResult($1, $2); }
+    : OuterNodeList EOF {
+        $1 = appendHead + $1 + appendTail;
+        //print_with_beauty($1);
+        return beautify($1);
+      }
     ;
 
-NodeList
-    : Node
-    | Node NodeList { $$ = $1 + ";" + $2; }
-    ;
-
-ImportList
-    : ImportNode
-    | ImportNode ImportList { $$ = $1 + "," + $2; }
-    ;
-
-ImportNode
-    : IMPORT NAME SINGLE_QUOTE     { $$ = "\"" + $2 + "\":\"$require('" + $3.slice(1, -1) + "')\""; }
-    | IMPORT NAME DOUBLE_QUOTE     { $$ = "\"" + $2 + "\":\"$require('" + $3.slice(1, -1) + "')\""; }
-    | IMPORT NAME '!' SINGLE_QUOTE { $$ = "\"" + $2 + "\":\"$load('"    + $4.slice(1, -1) + "')\""; }
-    | IMPORT NAME '!' DOUBLE_QUOTE { $$ = "\"" + $2 + "\":\"$load('"    + $4.slice(1, -1) + "')\""; }
-    ;
-
-ExportNode
-    : EXPORT NAME BlockNode
+OuterNodeList
+    : OuterNode               { $$ = $1 }
+    | OuterNode OuterNodeList { $$ = $1 + $2 }
     ;
 
 OuterNode
@@ -76,6 +71,109 @@ OuterNode
     | ImportNode
     | ExportNode
     | DefaultNode
+    | StatementNode
+    ;
+
+
+MixinNode
+    : MIXIN NAME BlockNode { 
+        $$ = createMixinNode($2, "", $3);
+    }
+    | MIXIN NAME Argument BlockNode { 
+        $$ = createMixinNode($2, $3, $4);
+    }
+    ;
+
+/*
+    import name "./path/to/module"
+        => var name = require('path/to/module');
+    import name from "./path"
+    import { abc as ok, ef } "./path"
+        => var _x = require('./path')
+        => var ok = _x.abc
+        => var ef = _x.ef
+    import { abc as ok, ef } from ".path"
+*/
+
+ImportNode
+    : IMPORT NAME ImportPath { 
+        $$ = "var " + $2 + " = require(" + $3 + ");"; 
+    }
+    | IMPORT '{' DestructureList '}' ImportPath {
+        var anony = createName();
+        $$ = "var " + anony + " = require(" + $5 + ");"
+           + $3.split(",").map(function (names) {
+                var name = names.split(" ");
+                return "var " + name[1] + "=" + anony + "." + name[0] + ";";
+             }).join("");
+    }
+    ;
+
+DestructureList
+    : DestructureName { 
+        $$ = $1;
+    }
+    | DestructureName ',' DestructureList { 
+        $$ = $1 + "," + $3;
+    }
+    ;
+
+DestructureName
+    : NAME { 
+        $$ = $1 + " " + $1 
+    }
+    | NAME AS NAME { 
+        $$ = $1 + " " + $3 
+    }
+    | DEFAULT AS NAME { 
+        $$ = $1 + " " + $3 
+    }
+    ;
+
+ImportPath
+    : SINGLE_QUOTE
+    | DOUBLE_QUOTE
+    | FROM SINGLE_QUOTE { $$ = $2 }
+    | FROM DOUBLE_QUOTE { $$ = $2 }
+    ;
+
+ExportNode
+    : ExportDeclaration NAME BlockNode {
+        $$ = createExportNode($2, $2, "", $3);
+    }
+    | ExportDeclaration NAME Argument BlockNode {
+        $$ = createExportNode($2, $2, $3, $4);
+    }
+    ;
+
+ExportDeclaration
+    : EXPORT
+    | EXPORT MIXIN { $$ = $1 }
+    ;
+
+DefaultNode
+    : DefaultDeclaration BlockNode {
+        $$ = createExportNode("default", createName(), "", $2);
+    }
+    | DefaultDeclaration Argument BlockNode { 
+        $$ = createExportNode("default", createName(), $2, $3);
+    }
+    | DefaultDeclaration NAME BlockNode {
+        $$ = createExportNode("default", $2, "", $3);
+    }
+    | DefaultDeclaration NAME Argument BlockNode {
+        $$ = createExportNode("default", $2, $3, $4);
+    }
+    ;
+
+DefaultDeclaration
+    : DEFAULT
+    | DEFAULT MIXIN { $$ = $1 }
+    ;
+
+InnerNodeList
+    : InnerNode
+    | InnerNode InnerNodeList { $$ = $1 + $2; }
     ;
 
 InnerNode
@@ -85,22 +183,58 @@ InnerNode
     | BlockNode
     | MixinNode
     | StringNode
-    | CommentNode // html comment
+    //| CommentNode // html comment
     | StatementNode
     | ExpressionNode
     ;
 
+/*
+    if `expression` {
+
+    } else if `expression` {
+
+    } else `expression` {
+
+    } else {
+
+    }
+*/
+
 IfNode
-    : IF RawExpression BlockNode                { $$ = "if(" + $2 + "){" + $3 + "}"; }
-    | IF RawExpression BlockNode ELSE IfNode    { $$ = "if(" + $2 + "){" + $3 + "} else " + $5; }
-    | IF RawExpression BlockNode ELSE BlockNode { $$ = "if(" + $2 + "){" + $3 + "} else {" + $5 + "}"; }
+    : IF RawExpression BlockNode { 
+        $$ = "if(" + $2 + "){" + $3 + "}"; 
+    }
+    | IF RawExpression BlockNode ElseNode { 
+        $$ = "if(" + $2 + "){" + $3 + "}" + $4 + "}"; 
+    }
+    ;
+
+ElseNode
+    : ELSE BlockNode {
+        $$ = "else {" + $2 + "}";
+    }
+    | ELSE BlockNode ElseNode {
+        $$ = "else {" + $2 + "}" + $3;
+    }
+    | ELSE RawExpression BlockNode {
+        $$ = "else if (" + $2 + ") {" + $3 + "}";
+    }
+    | ELSE RawExpression BlockNode ElseNode {
+        $$ = "else if (" + $2 + ") {" + $3 + "}" + $4;
+    }
+    | ELSE IF RawExpression BlockNode {
+        $$ = "else if (" + $3 + ") {" + $4 + "}";
+    }
+    | ELSE IF RawExpression BlockNode ElseNode {
+        $$ = "else if (" + $3 + ") {" + $4 + "}" + $5;
+    }
     ;
 
 TagNode
-    : NAME                    { $$ = createTagNode($1, "", ""); }
-    | NAME ':' Node           { $$ = createTagNode($1, "", $3); }
-    | NAME Attribute          { $$ = createTagNode($1, $2, ""); }
-    | NAME Attribute ':' Node { $$ = createTagNode($1, $2, $4); }
+    : NAME                         { $$ = createTagNode($1, "", ""); }
+    | NAME ':' InnerNode           { $$ = createTagNode($1, "", $3); }
+    | NAME Attribute               { $$ = createTagNode($1, $2, ""); }
+    | NAME Attribute ':' InnerNode { $$ = createTagNode($1, $2, $4); }
     ;
 
 Attribute
@@ -121,20 +255,32 @@ AttributeNode
     | NAME '=' EXPRESSION { $$ = "__p(' " + $1 + "=\"'+(" + $3.slice(1, -1) + ")+'\"');"; }
     ;
 
-EachNode
-    : EACH NAME IN EXPRESSION BlockNode          { $$ = createEachNode($2, $4, $5); }
-    | EACH NAME ',' NAME IN EXPRESSION BlockNode { $$ = createEachNode($2+","+$4, $6, $7); }
+/*
+    for name in exp {}
+    for i: v in exp {}
+    for exp {}
+    for (var i = 0, len = exp.length; i < len; i++) {
+        var name = exp[i];
+    }
+*/
+
+ForNode
+    : FOR RawExpression BlockNode {
+        $$ = "while (" + $2 + ") {" + $3 + "}";
+    }
+    | FOR NAME IN RawExpression BlockNode { 
+        $$ = "__each(" + $4 + "," + "function(" + $2 + "){" + $5 + "});";
+    }
+    | FOR NAME ':' NAME IN RawExpression BlockNode { 
+        $$ = "__each(" + $6 + "," + "function(" + $4 + "," + $2 + "){" + $7 + "});";
+    }
     ;
 
 BlockNode
     : '{' '}'          { $$ = ""; }
-    | '{' NodeList '}' { $$ = $2; }
+    | '{' InnerNodeList '}' { $$ = $2; }
     ;
 
-MixinNode
-    : MIXIN NAME BlockNode          { $$ = createMixinNode($2, "", $3); }
-    | MIXIN NAME Argument BlockNode { $$ = createMixinNode($2, $3, $4); }
-    ;
 
 Argument
     : '(' ')'          { $$ = ""; }
@@ -143,7 +289,7 @@ Argument
 
 NameList
     : NAME
-    | NAME ',' NameList { $$ = $1 + "," + $3; }
+    | NAME ',' NameList { $$ = $1 + ", " + $3; }
     ;
 
 // include !'string node'
@@ -162,7 +308,7 @@ CommentNode
     ;
 
 StatementNode
-    : STATEMENT { $$ = ""; } // % statement
+    : STATEMENT { $$ = $1.slice(1); } // % statement
     ;
 
 // include !`expression` $"raw_string"
@@ -176,6 +322,12 @@ RawExpression
 
 %%
 
+var beautify = require('js-beautify');
+
+function print_with_beauty (script) {
+    console.log(beautify(script, { indent_size: 4}));
+};
+
 function replaceEscapeCharacters (str) {
     return str.replace(/&/g, '&amp;')
               .replace(/</g, '&lt;')
@@ -187,6 +339,43 @@ function pushString (string) {
     return "__p('" + string + "');";
 }
 
+var id = 0;
+// create anonymous name
+function createName () {
+    return "__" + id++;
+}
+
+// append to head of each module
+// include __each, need to take care Object.ownProeprties.
+var appendHead = "var __each = function(obj, iterator) {                        "
+               + "    var i, length;                                            "
+               + "    if (obj == null) return obj;                              "
+               + "    if (obj.length === +obj.length) {                         "
+               + "        for (i = 0, length = obj.length; i < length; i++) {   "
+               + "            iterator(obj[i], i, obj);                         "
+               + "        }                                                     "
+               + "    } else {                                                  "
+               + "        var keys = Object.keys(obj);                          "
+               + "        for (i = 0, length = keys.length; i < length; i++) {  "
+               + "            iterator(obj[keys[i]], keys[i], obj);             "
+               + "        }                                                     "
+               + "    }                                                         "
+               + "    return obj;                                               "
+               + "};                                                            ";
+
+// append to the end of each template
+var appendTail = "module.exports = (function () {                  "
+               + "    if (exports.default) {                       "
+               + "        var e = exports.default;                 "
+               + "        __each(exports, function (value, name) { "
+               + "            e[name] = value;                     "
+               + "        });                                      "
+               + "        return e;                                "
+               + "    } else {                                     "
+               + "        return exports;                          "
+               + "    }                                            "
+               + "}());                                            "
+    
 function createTagNode (tag, attribute, body) {
     return pushString("<" + tag)
          + attribute
@@ -195,79 +384,25 @@ function createTagNode (tag, attribute, body) {
          + pushString("</" + tag + ">");
 }
 
-function createEachNode (args, exp, body) {
-    return "go.each(" + exp.slice(1, -1) + ",function(" + args + "){"
+function createForNode (args, exp, body) {
+    return "__each(" + exp.slice(1, -1) + ",function(" + args + "){"
          +      body
          + "});"
 }
 
+function createExportNode (exportName, scopeName, args, body) {
+    return "exports." + exportName + "=" + scopeName + ";"
+         + createMixinNode(scopeName, args, body);
+}
+
 function createMixinNode (name, args, body) {
     return "function " + name + "(" + args + "){"
-         + "    var __l = [], __p = function (x) { __l.push(x) }; "
+         + "    var __l = [], __p = [].push.bind(__l); "
          +      body
          + "    return __l.join(''); "
-         + "};";
+         + "}";
 }
 
 function createStringNode (string) {
     return pushString(replaceEscapeCharacters(string));
-}
-
-/*
-go.parallel([$require("xxx"), $load("xxx")])]).then(function () {
-    var xxx = argument[0][0];
-    var yyy = argument[0][1];
-    var zzz = argument[0][2];
-
-    // body
-    $export(function () {
-        with (arguments[0]) {
-            return ((function () {
-                'use strict';
-                var __l = [], __p = function (x) { __l.push(x); };
-
-                // body of script
-
-                return __l.join('');
-            })());
-        }
-    });
-}, function () { throw new Error("Cannot ...")});
-*/
-
-function finalResult (imports, body) {
-    // handle imports
-    // imports: "xxx": "require('xxx')
-    var toImports = JSON.parse("{" + imports + "}");
-
-    var scriptHead, scriptBody, scriptTail;
-
-    var keys = Object.keys(toImports);
-
-    if (keys.length > 0) {
-        scriptHead = "go.yield(go.parallel([" + keys.map(function (key) { return toImports[key] }).join(',') + "]), function () {"
-                   + "    if (arguments[0]) throw arguments[0];"
-                   +      keys.map(function (key, i) { return "var " + key + "=arguments[1][" + i + "]" }).join(";") + ";";
-    } else {
-        scriptHead = "";
-    }
-
-    scriptBody = "$export(function () {"
-               + "    arguments[0] = arguments[0] || {}; "
-               + "    with (arguments[0]) {"
-               + "        return ((function () {"
-               + "            'use strict';     "
-               + "            var __l = [], __p = function (x) { __l.push(x); };"
-               +              body
-               + "            return __l.join('');"
-               + "        })());"
-               + "    }"
-               + "});"
-
-    scriptTail = keys.length > 0 ? "});" : "";
-
-    var script = scriptHead + scriptBody + scriptTail;
-
-    //console.log(script);
-    return script;
 }

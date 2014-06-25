@@ -12,11 +12,13 @@ import {ffff} "./ooooo"
 
 import { default as abc, okk as ff } "./abcdefg"
 
-default (name, body) {
-	html {
-	  `head()`
-		`body()`
-  }
+default (title, body) {
+	html: {
+		head: {
+			title: `title`
+		}
+		`body`
+	}
 }
 
 mixin body {

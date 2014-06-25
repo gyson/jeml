@@ -1,0 +1,25 @@
+
+// import layout "./layout"
+// import body   "./body"
+// import { z, f, k as j, default as k } "./something"
+
+default name (okk, yes) {
+	html: {
+		head: {
+			title: "Whatever"
+		}
+		body: {
+			for name: val in `[0, 1, 2, 3]` {
+				`some_mixin()`
+			}
+		}
+	}
+}
+
+mixin some_mixin (test) {
+	p: "okk"
+}
+
+export name2 (a1, a2) {
+
+}
