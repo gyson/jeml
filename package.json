@@ -1,5 +1,5 @@
 {
-  "name": "rejs-template",
+  "name": "jeml",
   "version": "0.0.1",
   "description": "Javascript-Embedded Markup Language",
   "main": "index.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gyson/rejs-template.git"
+    "url": "https://github.com/gyson/jeml.git"
   },
   "author": "gyson <eilian.yunsong@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/gyson/rejs-template/issues"
+    "url": "https://github.com/gyson/jeml/issues"
   },
-  "homepage": "https://github.com/gyson/rejs-template",
+  "homepage": "https://github.com/gyson/jeml",
   "dependencies": {
     "gulp": "^3.8.1",
     "gulp-jison": "^1.0.0",
