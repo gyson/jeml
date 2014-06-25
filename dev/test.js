@@ -1,4 +1,4 @@
-var __each = function(obj, iterator) {
+var __each = function (obj, iterator) {
     var i, length;
     if (obj == null) return obj;
     if (obj.length === +obj.length) {
@@ -13,7 +13,7 @@ var __each = function(obj, iterator) {
     }
     return obj;
 };
-exports.default = name;
+exports['default'] = name;
 
 function name(okk, yes) {
     var __l = [],
@@ -29,14 +29,13 @@ function name(okk, yes) {
     __p('</head>');
     __p('<body');
     __p('>');
-    __each([0, 1, 2, 3], function(val, name) {
+    __each([0, 1, 2, 3], function (val, name) {
         __p(some_mixin());
     });
     __p('</body>');
     __p('</html>');
     return __l.join('');
 }
-
 function some_mixin(test) {
     var __l = [],
         __p = [].push.bind(__l);
@@ -46,17 +45,17 @@ function some_mixin(test) {
     __p('</p>');
     return __l.join('');
 }
-exports.name2 = name2;
+exports['name2'] = name2;
 
 function name2(a1, a2) {
     var __l = [],
         __p = [].push.bind(__l);
     return __l.join('');
 }
-module.exports = (function() {
-    if (exports.default) {
-        var e = exports.default;
-        __each(exports, function(value, name) {
+module.exports = (function () {
+    if (exports['default']) {
+        var e = exports['default'];
+        __each(exports, function (value, name) {
             e[name] = value;
         });
         return e;
