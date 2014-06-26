@@ -12,7 +12,6 @@ gulp.task('dev', function () {
     .on('change', ['jison']);
 });
 
-
 gulp.task('jison', function () {
     gulp.src('./src/*.jison')
         .pipe(jison({ moduleType: 'commonjs' }))
@@ -23,7 +22,7 @@ var fs = require('fs');
 var jeml = require('gulp-jeml');
 var beautify = require('gulp-beautify');
 
-gulp.task('compile', function () {
+gulp.task('example', function () {
     gulp.src(["./example/*.jeml"])
         .pipe(jeml())
         .pipe(beautify({ indentSize: 4 }))
