@@ -30,6 +30,7 @@ default (title, body) {
     html: {
         head: {
             title: `title`
+            script(src="some_address...")
         }
         body: {
             `body`
@@ -61,6 +62,40 @@ mixin body {
         p: { "introduce: " `introduction`}
     }
 }
+
+export print_name (name) {
+    p: { "my name is " `name` }
+}
+```
+
+in `main.js`:
+
+```js
+// you need to compile *.jeml file to *.js file before `require`
+var view = require('./view'); // path/to/generated/view.js
+
+console.log(view());
+/* output:
+<html>
+    <head>
+        <title>I am title</title>
+        <script src="some_address..."></script>
+    </head>
+    <body>
+        <p>I am body</p>
+        <p>name: foo</p>
+        <p>introduce: I am foo</p>
+        <p>name: bar</p>
+        <p>introduce: I am bar</p>
+    </body>
+</html>
+*/
+
+console.log(view.print_name("Gyson"));
+/* output:
+<p>my name is Gyson</p>
+*/
+
 ```
 
 ## TODO
