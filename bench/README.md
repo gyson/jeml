@@ -1,0 +1,9 @@
+
+# benchmark
+
+
+
+# result
+
+    dot: ...
+    ejs: ...

@@ -1,0 +1,14 @@
+
+
+default (title, text) {
+    html: {
+        head: { title: `title` }
+        body: { p: `text` }
+    }
+}
+
+(:default [title, text]
+    (:doctype html)
+    (html
+        (head (title `title`))
+        (body (p: `text`))))

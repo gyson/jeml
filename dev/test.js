@@ -1,69 +1,43 @@
-var __each = function (obj, iterator) {
-    var i, length;
-    if (obj == null) return obj;
-    if (obj.length === +obj.length) {
-        for (i = 0, length = obj.length; i < length; i++) {
-            iterator(obj[i], i, obj);
-        }
-    } else {
-        var keys = Object.keys(obj);
-        for (i = 0, length = keys.length; i < length; i++) {
-            iterator(obj[keys[i]], keys[i], obj);
-        }
-    }
-    return obj;
-};
 exports['default'] = name;
 
-function name(okk, yes) {
-    var __l = [],
-        __p = [].push.bind(__l);
-    __p('<html');
-    __p('>');
-    __p('<head');
-    __p('>');
-    __p('<title');
-    __p('>');
-    __p('Whatever');
-    __p('</title>');
-    __p('</head>');
-    __p('<body');
-    __p('>');
-    __each([0, 1, 2, 3], function (val, name) {
-        __p(some_mixin());
-    });
-    __p('</body>');
-    __p('</html>');
-    return __l.join('');
+function name(name) {
+    this('<html');
+    this('>');
+    this('<head');
+    this('>');
+    this('<title');
+    this('>');
+    this('Hello, ');
+    this(name);
+    this('</title>');
+    this('</head>');
+    this('<body');
+    this('>');
+    this.each([0, 1, 2, 3], function(val, name) {
+        this(some_mixin.call(this));
+    }, this);
+    this('</body>');
+    this('</html>');
 }
+
 function some_mixin(test) {
-    var __l = [],
-        __p = [].push.bind(__l);
-    __p('<p');
-    __p('>');
-    __p('okk');
-    __p('</p>');
-    return __l.join('');
+    this('<p');
+    this('>');
+    this('okk');
+    this('</p>');
 }
 exports['name2'] = name2;
 
 function name2(a1, a2) {
-    var __l = [],
-        __p = [].push.bind(__l);
-    __p('<okk');
-    __p('>');
-    __p('dd');
-    __p('</okk>');
-    return __l.join('');
+    this('<okk');
+    this('>');
+    this('dd');
+    this('</okk>');
 }
-module.exports = (function () {
-    if (exports['default']) {
-        var e = exports['default'];
-        __each(exports, function (value, name) {
-            e[name] = value;
-        });
-        return e;
-    } else {
-        return exports;
+module.exports = (function() {
+    var e = exports['default'] = exports['default'] || (function() {});
+    for (var name in exports) {
+        e[name] = exports[name];
     }
+    return e;
 }());

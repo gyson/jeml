@@ -25,7 +25,8 @@
 "from"                     return 'FROM'
 "as"                       return 'AS'
 
-[a-zA-Z_$][a-zA-Z_$0-9]*   return 'NAME'
+[a-zA-Z_$][a-zA-Z_$0-9]*       return 'NAME'
+"@"[a-zA-Z_$][a-zA-Z_$0-9]*    return 'MIXIN_CALL'
 
 ","                        return ','
 ":"                        return ':'
@@ -55,8 +56,8 @@
 // OuterNodeList
 Template
     : OuterNodeList EOF {
-        return appendHead + $1 + appendTail;
-      }
+        return stringConcate($1 + appendTail);
+    }
     ;
 
 OuterNodeList
@@ -74,57 +75,56 @@ OuterNode
 
 
 MixinNode
-    : MIXIN NAME BlockNode { 
+    : MIXIN NAME BlockNode {
         $$ = createMixinNode($2, "", $3);
     }
-    | MIXIN NAME Argument BlockNode { 
+    | MIXIN NAME Argument BlockNode {
         $$ = createMixinNode($2, $3, $4);
     }
     ;
 
 /*
+    // import './layout'
+        => var layout = require('./layout')
     import name "./path/to/module"
         => var name = require('path/to/module');
     import name from "./path"
     import { abc as ok, ef } "./path"
-        => var _x = require('./path')
-        => var ok = _x.abc
-        => var ef = _x.ef
+        => var ok = require('./path').abc;
+        => var ef = require('./path').ef;
     import { abc as ok, ef } from ".path"
 */
 
 ImportNode
-    : IMPORT NAME ImportPath { 
-        $$ = "var " + $2 + " = require(" + $3 + ");"; 
+    : IMPORT NAME ImportPath {
+        $$ = "var " + $2 + " = require(" + $3 + ");";
     }
     | IMPORT '{' DestructureList '}' ImportPath {
-        var anony = createName();
-        $$ = "var " + anony + " = require(" + $5 + ");"
-           + $3.split(",").map(function (names) {
-                var name = names.split(" ");
-                return "var " + name[1] + "=" + anony + "." + name[0] + ";";
-             }).join("");
+        $$ = $3.split(',').map(function (names) {
+            var name = names.split(' ')
+            return 'var ' + name[1] + '= require(' + $5 + ')["' + name[0] + '"];'
+        }).join('')
     }
     ;
 
 DestructureList
-    : DestructureName { 
+    : DestructureName {
         $$ = $1;
     }
-    | DestructureName ',' DestructureList { 
+    | DestructureName ',' DestructureList {
         $$ = $1 + "," + $3;
     }
     ;
 
 DestructureName
-    : NAME { 
-        $$ = $1 + " " + $1 
+    : NAME {
+        $$ = $1 + " " + $1
     }
-    | NAME AS NAME { 
-        $$ = $1 + " " + $3 
+    | NAME AS NAME {
+        $$ = $1 + " " + $3
     }
-    | DEFAULT AS NAME { 
-        $$ = $1 + " " + $3 
+    | DEFAULT AS NAME {
+        $$ = $1 + " " + $3
     }
     ;
 
@@ -153,7 +153,7 @@ DefaultNode
     : DefaultDeclaration BlockNode {
         $$ = createExportNode("default", createName(), "", $2);
     }
-    | DefaultDeclaration Argument BlockNode { 
+    | DefaultDeclaration Argument BlockNode {
         $$ = createExportNode("default", createName(), $2, $3);
     }
     | DefaultDeclaration NAME BlockNode {
@@ -178,6 +178,7 @@ InnerNode
     : IfNode
     | TagNode
     | ForNode
+    | CallNode
     | BlockNode
     | MixinNode
     | StringNode
@@ -199,11 +200,11 @@ InnerNode
 */
 
 IfNode
-    : IF RawExpression BlockNode { 
-        $$ = "if(" + $2 + "){" + $3 + "}"; 
+    : IF RawExpression BlockNode {
+        $$ = "if(" + $2 + "){" + $3 + "}";
     }
-    | IF RawExpression BlockNode ElseNode { 
-        $$ = "if(" + $2 + "){" + $3 + "}" + $4 + "}"; 
+    | IF RawExpression BlockNode ElseNode {
+        $$ = "if(" + $2 + "){" + $3 + "}" + $4 + "}";
     }
     ;
 
@@ -247,10 +248,10 @@ AttributeList
     ;
 
 AttributeNode
-    : NAME                { $$ = "__p(' " + $1 + "');"; }
-    | EXPRESSION          { $$ = "__p(' ' + (" + $1.slice(1, -1) + "));"; }
-    | NAME '=' RawString  { $$ = "__p(' " + $1 + "=\"" + $3 + "\"');"; }
-    | NAME '=' EXPRESSION { $$ = "__p(' " + $1 + "=\"'+(" + $3.slice(1, -1) + ")+'\"');"; }
+    : NAME                { $$ = "this.push(' " + $1 + "');"; }
+    | EXPRESSION          { $$ = "this.push(' ' + (" + $1.slice(1, -1) + "));"; }
+    | NAME '=' RawString  { $$ = "this.push(' " + $1 + "=\"" + $3 + "\"');"; }
+    | NAME '=' EXPRESSION { $$ = "this.push(' " + $1 + "=\"'+(" + $3.slice(1, -1) + ")+'\"');"; }
     ;
 
 /*
@@ -266,12 +267,41 @@ ForNode
     : FOR RawExpression BlockNode {
         $$ = "while (" + $2 + ") {" + $3 + "}";
     }
-    | FOR NAME IN RawExpression BlockNode { 
-        $$ = "__each(" + $4 + "," + "function(" + $2 + "){" + $5 + "});";
+    | FOR NAME IN RawExpression BlockNode {
+        $$ = "this.each(" + $4 + "," + "function(" + $2 + "){" + $5 + "}, this);";
     }
-    | FOR NAME ':' NAME IN RawExpression BlockNode { 
-        $$ = "__each(" + $6 + "," + "function(" + $4 + "," + $2 + "){" + $7 + "});";
+    | FOR NAME ':' NAME IN RawExpression BlockNode {
+        $$ = "this.each(" + $6 + "," + "function(" + $4 + "," + $2 + "){" + $7 + "}, this);";
     }
+    ;
+
+/*
+    @name_of_called(exp, abc, `expression`)
+    =>
+    `name_of_called.call(this, exp, abc, expression)`
+*/
+
+CallNode
+    : MIXIN_CALL '(' ')' {
+        $$ = 'this.push(' + $1.slice(1) + '.call(this));'
+    }
+    | MIXIN_CALL '(' CallArgumentList ')' {
+        $$ = 'this.push(' + $1.slice(1) + '.call(this' + $3 + '));'
+    }
+    ;
+
+CallArgumentList
+    : CallArgument {
+        $$ = ',' + $1
+    }
+    | CallArgument ',' CallArgumentList {
+        $$ = ',' + $1 + $3
+    }
+    ;
+
+CallArgument
+    : NAME
+    | RawExpression
     ;
 
 BlockNode
@@ -311,7 +341,7 @@ StatementNode
 
 // include !`expression` $"raw_string"
 ExpressionNode
-    : EXPRESSION { $$ = "__p(" + $1.slice(1, -1) + ");"; }
+    : EXPRESSION { $$ = "this.push(" + $1.slice(1, -1) + ");"; }
     ;
 
 RawExpression
@@ -319,6 +349,22 @@ RawExpression
     ;
 
 %%
+
+/*
+this.push("abcd");
+this.push("efgh");
+
+=>
+
+this.push("abcdefgh");
+
+*/
+
+function stringConcate(source) {
+    return source
+        .replace(/\"\)\;\s*this\.push\(\"/g, '')
+        .replace(/\'\)\;\s*this\.push\(\'/g, '')
+}
 
 function replaceEscapeCharacters (str) {
     return str.replace(/&/g, '&amp;')
@@ -328,7 +374,7 @@ function replaceEscapeCharacters (str) {
 }
 
 function pushString (string) {
-    return "__p('" + string + "');";
+    return "this.push('" + string + "');";
 }
 
 var id = 0;
@@ -337,37 +383,13 @@ function createName () {
     return "__" + id++;
 }
 
-// append to head of each module
-// include __each, need to take care Object.ownProeprties.
-var appendHead = "var __each = function(obj, iterator) {                        "
-               + "    var i, length;                                            "
-               + "    if (obj == null) return obj;                              "
-               + "    if (obj.length === +obj.length) {                         "
-               + "        for (i = 0, length = obj.length; i < length; i++) {   "
-               + "            iterator(obj[i], i, obj);                         "
-               + "        }                                                     "
-               + "    } else {                                                  "
-               + "        var keys = Object.keys(obj);                          "
-               + "        for (i = 0, length = keys.length; i < length; i++) {  "
-               + "            iterator(obj[keys[i]], keys[i], obj);             "
-               + "        }                                                     "
-               + "    }                                                         "
-               + "    return obj;                                               "
-               + "};                                                            ";
-
 // append to the end of each template
-var appendTail = "module.exports = (function () {                  "
-               + "    if (exports['default']) {                    "
-               + "        var e = exports['default'];              "
-               + "        __each(exports, function (value, name) { "
-               + "            e[name] = value;                     "
-               + "        });                                      "
-               + "        return e;                                "
-               + "    } else {                                     "
-               + "        return exports;                          "
-               + "    }                                            "
-               + "}());                                            "
-    
+var appendTail = "module.exports = exports['default'] = exports['default'] || (function () {});"
+               + "Object.keys(exports).forEach(function (name) {"
+               + "    module.exports[name] = exports[name];"
+               + "});"
+               ;
+
 function createTagNode (tag, attribute, body) {
     return pushString("<" + tag)
          + attribute
@@ -377,9 +399,9 @@ function createTagNode (tag, attribute, body) {
 }
 
 function createForNode (args, exp, body) {
-    return "__each(" + exp.slice(1, -1) + ",function(" + args + "){"
+    return "this.each(" + exp.slice(1, -1) + ",function(" + args + "){"
          +      body
-         + "});"
+         + "}, this);"
 }
 
 function createExportNode (exportName, scopeName, args, body) {
@@ -389,11 +411,14 @@ function createExportNode (exportName, scopeName, args, body) {
 
 function createMixinNode (name, args, body) {
     return "function " + name + "(" + args + "){"
-         + "    var __l = [], __p = [].push.bind(__l); "
          +      body
-         + "    return __l.join(''); "
          + "}";
 }
+
+// string interpolation
+// "Hi, my name is `lastname` `firstname`."
+// => same as
+// ("hi, my name is " + (lastname) + " " + (firstname) ".")
 
 function createStringNode (string) {
     return pushString(replaceEscapeCharacters(string));

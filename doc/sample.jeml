@@ -1,5 +1,4 @@
 
-
 import layout "./layout"
 import layout from "./layout" // from is optional
 
@@ -22,11 +21,9 @@ mixin body {
 }
 
 export name (abc, efg) {}
-export mixin name (abc, efg) {}
-
 
 mixin eg_for {
-	for index: value in `xxx` {
+	for index, value in `xxx` {
 
 	}
 
@@ -61,13 +58,26 @@ mixin eg_if {
 	} else {
 
 	}
+
+	title: 'hi, my name is `abcefg`'
+
+	switch exp {
+	case abc:
+		p: "name"
+	case efg:
+		p: "okkk"
+	case abc:
+		p "booolk"
+	default:
+		love: 'okkk'
+	}
 }
 
 mixin nested_mixin (users) {
 
 	for user in `users` {
 		// call mixin
-		`show_user()`
+		@show_user()
 
 		mixin show_user {
 			p: { "User name: " `user.name` }

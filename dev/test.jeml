@@ -1,16 +1,16 @@
-
+//
 // import layout "./layout"
 // import body   "./body"
 // import { z, f, k as j, default as k } "./something"
 
-default name (okk, yes) {
+default name (name) {
 	html: {
 		head: {
-			title: "Whatever"
+			title: { "Hello, " `name` }
 		}
 		body: {
 			for name: val in `[0, 1, 2, 3]` {
-				`some_mixin()`
+				@some_mixin()
 			}
 		}
 	}
