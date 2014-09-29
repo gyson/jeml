@@ -1,43 +1,56 @@
-exports['default'] = name;
+ 'use strict';
+ exports['default'] = function() {
+     if (a) {
+         this.s += '<input type="name"/>hello, I\'m feeling good\n        how are you';
+         this.s += /hi/gi;
+         this.s += x === 1 || okk || yes && no + 10 ? y ? ss : x + -1.2 : z ? f : f;
+     } else {
+         this.s += new Date().now || 10 instanceof abc ? abb : fff ? abc : dd;
+     }
+     this.each(abc, function(name, b) {;
+         (name).call(this, d, x, z);
+     }, this);
+     if (x) {
+         this.s += 'okk';
+     } else if (y) {
+         this.s += 'kkk';
+     } else if (z) {
+         this.s += 'fff';
+     } else {
+         this.s += 'okk';
+     }
+     switch (a) {
+         case x:
+         case y:
+         case z:
+             this.s += 'okk';
+             break;
+         case efg:
+         case okk:
+             this.s += 'dd';
+             break;
+         default:
+             this.s += 'okk';
+     }
 
-function name(name) {
-    this('<html');
-    this('>');
-    this('<head');
-    this('>');
-    this('<title');
-    this('>');
-    this('Hello, ');
-    this(name);
-    this('</title>');
-    this('</head>');
-    this('<body');
-    this('>');
-    this.each([0, 1, 2, 3], function(val, name) {
-        this(some_mixin.call(this));
-    }, this);
-    this('</body>');
-    this('</html>');
-}
+     function name(a, b, c) {
+         this.s += '<p>okk</p>';
+     };
+ };
 
-function some_mixin(test) {
-    this('<p');
-    this('>');
-    this('okk');
-    this('</p>');
-}
-exports['name2'] = name2;
+ function abc(t) {
+     this.s += '<html><head><title>';
+     this.s += this.escape(t.title);
+     this.s += '</title></head><body><p>';
+     this.s += t.text;
+     this.s += '</p></body></html>';
+ };
+ exports['name2'] = name2;
 
-function name2(a1, a2) {
-    this('<okk');
-    this('>');
-    this('dd');
-    this('</okk>');
-}
-module.exports = (function() {
-    var e = exports['default'] = exports['default'] || (function() {});
-    for (var name in exports) {
-        e[name] = exports[name];
-    }
-    return e;
-}());
+ function name2(a1, a2) {
+     this.s += '<okk>dd</okk>';
+ };
+ module.exports = exports['default'] = exports['default'] || (function() {});
+ Object.keys(exports).forEach(function(name) {
+     module.exports[name] = exports[name];
+ });

@@ -1,36 +1,23 @@
 
 var jeml = require('../index');
-var should = require('should');
 
 describe('jeml', function () {
 
 
-    describe('jeml.parse', function () {
+    describe('parse', function () {
 
     })
 
 
-    describe('jeml.render', function () {
+    describe('render', function () {
 
     })
 
-    describe('jeml.renderFile', function () {
+    describe('renderFile', function () {
 
     })
 
-    describe('jeml.stream', function () {
-
-    })
-
-    describe('jeml.streamFile', function () {
-
-    })
-
-    describe('jeml.view', function () {
-
-        // view
-        // view.render
-        // view.stream
+    describe('view', function () {
 
     })
 

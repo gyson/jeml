@@ -1,44 +1,96 @@
-# use S-expression
+# use S-expression: SEML
 
-    (:with 'use strict')
+    % "use strict";
 
-    (:import
+    (import
         fs 'fs'
-        layout './layout')
+        layout './layout'
+        {abc as k, efg as f} './hello')
 
-    (:default name [abc efg okk]
-        (:doctype 5)
+    (default name [abc, efg, okk]
+        (doctype html)
         (html
-            (head (title &'my title is `title`'))
-            (body
+            (head
+                (title &'my title is #{title}')
+                (script '
+                    function mutlipleLine () {
+
+                    }
+                    var name = ...
+                ')
+
+                (script { fs.readFile(__dirname + '/abc.js') })))
+
+            % var abc = ['hello', 'yes'].join(' ');
+
+            (body [input="hello" world='10']
                 (h1 "I am feeling good")
 
-                % var name = 10
-                % var okk = 20
-                % some expression
+                % js statement...
+                % js statement...
 
-                + name(abcd, efg)
-                # @name @okkk @yes @pig.love @name["abcd"].naokk
+                % if (x > 10) {
 
-                (:def name []
-                    (:for [index value in abc]
-                        + name(a, b, c, d)
-                        + student(a, b, c, d)
+                    (p 'okkk')
+                    (import
+                        fs 'fs'
+                        layout './layout')
 
-                    (:for [value in abc]
-                        (input [name='hello' abc='problem' efg='yes'])
-                        (input []/)
+                % }
+
+                // exports.name = name
+                // function name () {...}
+                (export name ...)
+
+                (p 'name os something' { expression } 'good to play with.')
+
+                (if )
+
+                (+ name [a, b, c, d])
+
+                (case [abc.length]
+                    when [x, exp, exp]
+                        (p 'length')
+                    when [x]
+                        (p 'okkk')
+                    else
+                        (p 'length'))
+
+                (cond
+                    when [x > 10] (...)
+                    when [x < 10] (...)
+                    else          (...))
+
+                (let [a * 10 as k, argument.length as len]
+                    (p 'name #{len}'))
+
+                (if [express]
+                    then (p exp)
+                    else (e xpp))
+
+                (comment "hello, I am just comment")
+
+                // `expression` => "#{expression}" {name}={okk}
+                (input [id='name' okk='that' title="#{name.title}"] /)
+
+                (each [value, index, obj in exp]
+                    (+ name [1, 2, 3]))
+
+                (if [expression]
+                    then
+                        (p "expression")
+                    else
+                        (p "okkkkkkkkk"))
+
+
+                // use var name = ...
+                (mixin name []
+                    (each [value, index, obj in abc]
+                        (+ name [b, c, d]))
+
+                    (each [v, i, o in abc]
+                        (input [name='hello', abc='problem', efg='yes'])
+                        (input [] /)
                         (form [name='abc' efg='sss' iii='sss']
                             (input ...)
-                            (submit abc)))
-
-                    (:switch abc
-                        [1 2 3] abc ...
-                        [2] efg xx
-                        []  "" )))))
-
-    (script '''
-        function abc () {
-            name()
-        }
-    ''')
+                            (submit abc))))))

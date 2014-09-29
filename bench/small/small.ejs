@@ -1,8 +1,22 @@
-<html>
-    <head>
-        <title><%= title %></title>
-    </head>
-    <body>
-        <p><%= text %></p>
-    </body>
-</html>
+<div>
+    <h1 class='header'><%- header %></h1>
+    <h2 class='header2'><%- header2 %></h2>
+    <h3 class='header3'><%- header3 %></h3>
+    <h4 class='header4'><%- header4 %></h4>
+    <h5 class='header5'><%- header5 %></h5>
+    <h6 class='header6'><%- header6 %></h6>
+    <ul class='list'>
+        <% for (var i = 0, l = list.length; i < l; i++) { %>
+            <li class='item'>
+                <%- list[i] %>
+            </li>
+        <% } %>
+    </ul>
+    <ul class='list'>
+        <% for (var i = 0, l = projects.length; i < l; i++) { %>
+            <li class='project'>
+                <%- projects[i].name %> : <%- projects[i].description %>
+            </li>
+        <% } %>
+    </ul>
+</div>

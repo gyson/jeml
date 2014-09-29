@@ -1,14 +1,78 @@
+% 'use strict';
 
+default (obj) {
+    div {
+        h1(class="header"): [obj.header]
+        h2(class="header2"): [obj.header2]
+        h3(class="header3"): [obj.header3]
+        h4(class="header4"): [obj.header4]
+        h5(class="header5"): [obj.header5]
+        h6(class="header6"): [obj.header6]
+        ul.list {
+            each item in obj.list {
+                li.item: [item]
+            }
+        }
+        ul.list {
+            each project in obj.projects {
+                li.item {[project.name]': '[project.description]}
+            }
 
-default (title, text) {
-    html: {
-        head: { title: `title` }
-        body: { p: `text` }
+        }
     }
 }
 
-(:default [title, text]
-    (:doctype html)
-    (html
-        (head (title `title`))
-        (body (p: `text`))))
+// is abc instanceof xyz ?
+// is okk string ?
+// if abc is string {
+//
+// }
+//
+// if abc is Object {
+//
+// }
+//
+// is abc is instanceof okk {
+//
+// }
+//
+// if abc is not string {
+//
+// }
+//
+// (abc ? efg : okk)
+//
+// defn abc {
+//
+// }
+//
+// fn* { return #0 - #1 }
+//
+// (a, b) => (a * b)
+// fn { abc() }
+// abc.map(fn { print(ab) })
+//
+// import "abc" // require('abc')
+// import abc "abc" // var abc; abc = require("abc")
+// import efg "efg" // var
+//
+// export abc: expression
+// export abc: expression
+// export "abc": expression
+//
+// default abc // module.exports = exports = abc
+//
+// def hi fn(abc, efg) {
+//
+// }
+//
+// mixin hi (name) {
+//     p: [name]
+//
+//     script: ```
+//        function name () {
+//
+//        }
+//     ```
+//
+// }

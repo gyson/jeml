@@ -1,0 +1,47 @@
+default (title) {
+    html {
+        head: title: %(title)
+
+        body: p[id="hi"]: "feeling good"
+    }
+}
+
+mixin abc {
+    li#hi {
+        each name in abc {
+
+        }
+    }
+    abc: efg: hi {
+
+    }
+    mixin xyz {
+        hi
+    }
+}
+
+mixin hi {
+    ' abc="name space" '
+}
+
+h4[class="name" %(abc) +(hi)]: #(name)
+
+h4(class="name"): #[name]
+
+{ "abcdef "%(hello)" I think it's find to play with it" }
+
+h4[x=#(hi) (z)="love" ()=()]
+
++(abc, hi, hello)
++(body: a, b, c)
+
+%(something)
+&(escaped)
+
+&name()
+&isArray()
+&toArray(arguments).slice()
+
+    p:  | I think it's' find to paly iwth it
+        | but nothing can stop me for what ever reason
+        | hope you think I did right things

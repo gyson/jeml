@@ -17,6 +17,11 @@ to generate js files.
 $ npm install jeml
 ```
 
+## Goodness
+
+* High performance. Based on [benchmark](https://github.com/gyson/jeml/blob/master/bench/README.md),
+it's a little bit slower than doT, but much faster than Jade, ejs, and handlebars.
+
 ## Note
 
 * It's recommended to use Javascript Syntax Highlight to get better look.
@@ -25,10 +30,3 @@ $ npm install jeml
 ## Example
 
 check [jeml-example](https://github.com/gyson/jeml-example) for usage.
-
-## TODO
-
-* command line tool
-* tests
-* bench
-* performance optimization (may use some libs from js side)

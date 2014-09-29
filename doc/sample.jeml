@@ -1,3 +1,4 @@
+% 'use strict';
 
 import layout "./layout"
 import layout from "./layout" // from is optional
@@ -7,81 +8,76 @@ import { ffff } from "./some_module"
 
 //import { default as abc, okk as ff } "./abcdefg"
 
-default (title, body) {
-	html: {
-		head: {
-			title: `title`
+mixin layout (title, body) {
+	html {
+		head: title: [title]
+		body {
+			+ body()
 		}
-		`body`
 	}
 }
 
-mixin body {
-	p: "lkk"
+export index (user) {
+	+ layout("index page", body)
+	mixin body {
+		// xxx, xxx, xxx
+	}
 }
 
-export name (abc, efg) {}
+export info (user) {
+	+ layout("info page", body)
+	mixin body {
+
+	}
+}
 
 mixin eg_for {
-	for index, value in `xxx` {
+	each value, index in xxx {
 
 	}
 
-	for value in `expression` {
-
+	each value, index in xxx {
+		p: 'hello'
 	}
 
-	// while loop
-	for `expression` {
-
-	}
+	input(id=[abc ? "123" : "456"] [expression])
 
 	% var users = [
 	%	  { name: "okk", number: "good" },
 	%	  { name: "kaka", number: "ddd" }
 	% ]
+	- var users = [
+	-	  { name: "okk", number: "good" },
+	-	  { name: "kaka", number: "ddd" }
+	- ]
 
-	for user in `users` {
-		p: { "User name: " `user.name` }
-		p: { "User number: " `user.number` }
+	for user in users {
+		p: "User name: #{user.name}"
+		p: "User number: #{user.number}"
 	}
 }
 
 mixin eg_if {
 
-	if `x > 10` {
-
-	} else if `x > 5` {
-
-	} else `x > 0` { // if is optional
-
-	} else {
-
+	title: "hello"
+	title {
+		li {
+			app
+		}
 	}
 
-	title: 'hi, my name is `abcefg`'
-
-	switch exp {
-	case abc:
-		p: "name"
-	case efg:
-		p: "okkk"
-	case abc:
-		p "booolk"
-	default:
-		love: 'okkk'
-	}
+	title {'hi, my name is '[name]}
 }
 
 mixin nested_mixin (users) {
 
-	for user in `users` {
+	for user in users {
 		// call mixin
-		@show_user()
+		+ show_user()
 
 		mixin show_user {
-			p: { "User name: " `user.name` }
-			p: { "User number: " `user.number` }
+			p: "User name: #{user.name}"
+			p: "User number: #{user.number}"
 		}
 	}
 }
