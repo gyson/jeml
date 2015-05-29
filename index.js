@@ -141,18 +141,6 @@ function jeml(strings) {
             return `}else{`
         }
 
-        // // {case exp}
-        // // if (NONENAME = exp, false) {
-        // if (parsed = /case\s+([^]*)/.exec(ret)) {
-        //     return `if(${ CASENAME }=${ parsed[1] },false){`
-        // }
-        //
-        // // {when 'hello, good'}
-        // // } else if (NONENAME === exp) {
-        // if (parsed = /when\s+([^]*)/.exec(ret)) {
-        //     return `}else if(${ CASENAME }=${ parsed[1] }){`
-        // }
-
         // {end}
         // }
         if (parsed = /\s*end\s*/.exec(ret)) {

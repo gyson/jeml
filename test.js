@@ -72,25 +72,6 @@ test('each block', function (t) {
     t.end()
 })
 
-// {case exp}
-// {when exp, exp2}
-//     {case exp}
-//     {when exp1, exp2}
-//     {else}
-//     {end}
-// {end}
-
-//
-// {case exp1}      // if (XXX = exp1, false) {
-// {when exp2}      // } else if (XXX === exp2) {
-// {when exp3}      // } else if (XXX === exp3) {
-// {else}           // } else {
-// {end}            // }
-//
-// test('case block', function () {
-//
-// })
-
 // escaped
 test('expression block', function (t) {
 
