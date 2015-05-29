@@ -1,9 +1,6 @@
 'use strict';
 
 var assert = require('assert')
-var beautify = require('js-beautify')
-var beatyHTML = beautify.html
-var beautyJS = beautify.js
 
 module.exports = exports = jeml.default = jeml
 
@@ -179,17 +176,15 @@ function jeml(strings) {
     // process args
     // args = args || 'function(){"use strict";'
 
-    var body = `return function(${ args }){'use strict'; var ${JEML_STRING} = ''; ${ result } return ${JEML_STRING};}`
+    var body = `function(${ args }){'use strict'; var ${JEML_STRING} = ''; ${ result } return ${JEML_STRING};}`
 
     // var __jeml_0__ = arguments[1][0]
     // var __jeml_1__ = argumetns[1][1]
-    // console.log(beautyJS(body))
 
-    // try ... catch (e) { error: raw is something }
-    var fn = (new Function(ESCAPE, INPUTS, body)(escape, inputs))
-
-    console.log(beautyJS(fn.toString()))
-    // // return (new Function(fnStr))().apply(undefined, args)
-    // return (new Function(ESCAPE, INPUTS, body)(escape, inputs))
-    return fn
+    try {
+        return (new Function(ESCAPE, INPUTS, `return ${body}`)(escape, inputs))
+    } catch (e) {
+        e.raw = body
+        throw e
+    }
 }
