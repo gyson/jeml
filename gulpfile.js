@@ -1,40 +1,24 @@
 
-var gulp = require('gulp');
-var jeml = require('./index')
-var gutil = require('./lib/gulp-util')
-var beautify_html = require('js-beautify').html;
+var gulp = require('gulp')
 
-gulp.task('watch', function () {
-    gulp.watch('./lib/template.jison', ['jison']);
-    gulp.watch('./dev/*.jeml', ['dev-jeml', 'dev-test']);
-});
 
-gulp.task('jison', function () {
-    gulp.src('./lib/template.jison')
-        .pipe(gutil.jison({ moduleType: 'commonjs' }))
-        //.pipe(gutil.logger())
-        .pipe(gulp.dest('./lib/'));
-});
+gulp.task('dev', function () {
 
-gulp.task('dev-jeml', function () {
-    gulp.src('./dev/*.jeml')
-        .pipe(gutil.jeml())
-        .pipe(gutil.beautify({ indentSize: 4 }))
-        .pipe(gutil.logger())
-        .pipe(gulp.dest('./dev/'))
-});
+// exports.watch = function () {
+    var fs = require('fs')
+    var sh = require('shelljs')
+    var path = require('path')
 
-gulp.task('bench-jeml', function () {
-    gulp.src('./bench/small/*.jeml')
-        .pipe(gutil.jeml())
-        .pipe(gutil.beautify({ indentSize: 4 }))
-        .pipe(gutil.logger())
-        .pipe(gulp.dest('./bench/small/'))
-});
+    var last = Date.now()
 
-gulp.task('dev-test', function () {
-    // clear cache
-    delete require.cache[require.resolve('./dev/test')]
-    var templateFn = require('./dev/test');
-    console.log(beautify_html(jeml.render(templateFn, "gyson")))
-});
+    fs.watch(path.join(__dirname, 'index.js'), handler)
+    fs.watch(path.join(__dirname, 'dev.js'), handler)
+
+    function handler() {
+        var now = Date.now()
+        if (last + 2000 < now) {
+            last = now
+            sh.exec('clear; node dev')
+        }
+    }
+})
