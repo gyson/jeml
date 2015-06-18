@@ -1,96 +1,60 @@
-//
-// var all = {
-//     ejs: require('./ejs'),
-//     jeml: require('./jeml'),
-//     jade: require('./jade'),
-//     handlebars: require('./handlebars'),
-//     dot: require('./dot')
-// };
-var fs = require('fs');
-var beautify = require('js-beautify');
+'use strict';
 
+var fs = require('fs')
+var path = require('path')
+var beautify = require('js-beautify')
+var Benchmark = require('benchmark')
 
-var ejs = require('ejs');
-var jeml = require('../index');
-var jade = require('jade');
-var dot = require('dot');
-var handlebars = require('handlebars');
+var dot = require('dot')
+var ejs = require('ejs')
+var handlebars = require('handlebars')
+var jade = require('jade')
+var jeml = require('..')
 
-var all = {
-    ejs: {
-        compile: ejs.compile,
-        execute: callTemplate
-    },
-    jeml: {
-        compile: jeml.compile,
-        execute: jeml.render
-    },
-    jade: {
-        compile: jade.compile,
-        execute: callTemplate
-    },
-    dot: {
-        compile: dot.template,
-        execute: callTemplate
-    },
-    handlebars: {
-        compile: handlebars.compile,
-        execute: callTemplate
-    }
-}
+var suite = new Benchmark.Suite();
 
-function callTemplate (templateFn, arg) {
-    return templateFn(arg)
-}
+var DATA = require('./small/small-data')
 
-//var a = Object.keys(all).join(' ');
+var dotSource = fs.readFileSync(path.join(__dirname, './small/small.dot'), 'utf8')
+var dotFn = dot.compile(dotSource)
 
-// bench `small`
-// baded on http://jsperf.com/dom-vs-innerhtml-based-templating/964
-'ejs jade jeml dot handlebars'
-.split(' ').forEach(bench('small', 50000));
+suite.add('dot', function() {
+    return dotFn(DATA)
+})
 
-// small / medium / large
-function bench (benchName, iteration) {
-    var pathName = __dirname + '/' + benchName + '/' + benchName;
+var ejsSource = fs.readFileSync(path.join(__dirname, './small/small.ejs'), 'utf8')
+var ejsFn = ejs.compile(ejsSource)
 
-    //var htmlPage = fs.readFileSync(pathName + '.html', 'utf8').replace(/\s+/g, '');
+suite.add('ejs', function() {
+    return ejsFn(DATA)
+})
 
-    //console.log(htmlPage.length)
+var hdbSource = fs.readFileSync(path.join(__dirname, './small/small.handlebars'), 'utf8')
+var hdbFn = handlebars.compile(hdbSource)
 
-    return function (name) {
-        // path/to/small/small
+suite.add('handlebars', function() {
+    return hdbFn(DATA)
+})
 
-        var templateSource = fs.readFileSync(pathName + '.' + name, 'utf8');
+var jadeSource = fs.readFileSync(path.join(__dirname, './small/small.jade'), 'utf8')
+var jadeFn = jade.compile(jadeSource)
 
-        var templateFn = all[name].compile(templateSource);
+suite.add('jade', function () {
+    return jadeFn(DATA)
+})
 
-        if (name === 'jeml') {
-            templateFn = require('./small/small.js')
-        }
+var jemlFn = require('./small/small.jeml.js')
 
-        if (name === 'dot') {
-            console.log(beautify(templateFn.toString()))
-        }
+suite.add('jeml', function () {
+    return jemlFn(DATA)
+})
 
-        var data = require(pathName + '-data.js');
+suite.on('cycle', function(event) {
+  console.log(String(event.target))
+})
 
-        console.log('\n========', name);
+suite.on('complete', function() {
+  console.log('Fastest is ' + this.filter('fastest').pluck('name'))
+})
 
-        var start = Date.now();
-
-        // check correctness
-        //console.log(all[name].execute(templateFn, data))
-        //console.log(all[name].execute(templateFn, data).replace(/\s+/g, '').length)
-
-        for (var i = 0; i < iteration; i++) {
-            all[name].execute(templateFn, data);
-        }
-
-        var time = Date.now() - start;
-        var speed = Math.round(iteration / time);
-
-        console.log('takes %d miliseconds', time);
-        console.log('speed %d k ops/second', speed);
-    }
-}
+suite.run({ 'async': true })

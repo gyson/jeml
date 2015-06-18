@@ -1,18 +1,18 @@
 <div>
-    <h1 class='header'>{{=it.header}}</h1>
-    <h2 class='header2'>{{=it.header2}}</h2>
-    <h3 class='header3'>{{=it.header3}}</h3>
-    <h4 class='header4'>{{=it.header4}}</h4>
-    <h5 class='header5'>{{=it.header5}}</h5>
-    <h6 class='header6'>{{=it.header6}}</h6>
+    <h1 class='header'>{{!it.header}}</h1>
+    <h2 class='header2'>{{!it.header2}}</h2>
+    <h3 class='header3'>{{!it.header3}}</h3>
+    <h4 class='header4'>{{!it.header4}}</h4>
+    <h5 class='header5'>{{!it.header5}}</h5>
+    <h6 class='header6'>{{!it.header6}}</h6>
     <ul class='list'>
         {{~it.list :value}}
-            <li class='item'>{{=value}}</li>
+            <li class='item'>{{!value}}</li>
         {{~}}
     </ul>
     <ul class='list'>
         {{~it.projects :project}}
-            <li class='item'>{{=project.name}} : {{=project.description}}</li>
+            <li class='item'>{{!project.name}} : {{!project.description}}</li>
         {{~}}
     </ul>
 

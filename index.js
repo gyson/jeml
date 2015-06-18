@@ -19,12 +19,18 @@ var fnEscape = function (char) {
     return escapeMap[char]
 }
 
+var hasEscapedChars = /&<>"'\//
+
 function escape(str) {
     if (str == null) {
         return ''
     }
     if (typeof str !== 'string') {
         str = String(str)
+    }
+    // when string is small, test string first
+    if (str.length < 300 && !hasEscapedChars.test(str)) {
+        return str
     }
     return str.replace(reEscape, fnEscape)
 }
