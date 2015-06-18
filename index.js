@@ -5,7 +5,7 @@ var assert = require('assert')
 module.exports = jeml
 
 var reEscape = /[&<>"'\/]/g
-
+var hasEscapedChars = /[&<>"'\/]/
 var escapeMap = {
     "&": "&amp;",
     "<": "&lt;",
@@ -18,8 +18,6 @@ var escapeMap = {
 var fnEscape = function (char) {
     return escapeMap[char]
 }
-
-var hasEscapedChars = /&<>"'\//
 
 function escape(str) {
     if (str == null) {
@@ -40,7 +38,7 @@ var INPUTS = '_jeml_inputs_'
 var JEML_STRING = '_jeml_s_'
 
 var reBody = /(\}(?:\\\{|[^\{])*)|(\{(?:\\\}|[^\}])*)/g
-var reInput = new RegExp(`[=?!]?\\(${ INPUTS }\\[(\\d+)\\]\\)`, 'g')
+var reInput = new RegExp(`[=?!]?\\(${INPUTS}\\[(\\d+)\\]\\)`, 'g')
 
 var count = 0
 function getUniqueName() {
@@ -70,7 +68,7 @@ function jeml(strings) {
             // xxx="{expression}" yyy="/name/good/${expression}"
             var ret = text.slice(1)
                     .replace(reInput, function (_, index) {
-                        return escape(inputs[index])
+                        return String(inputs[index])
                     })
                     .replace(/\s+/g, ' ')
                     .replace(/\\\{/g, '{')
