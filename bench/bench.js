@@ -58,31 +58,3 @@ suite.on('complete', function() {
 })
 
 suite.run({ 'async': true })
-
-// define types
-//
-// compile(m.Number, m.String, function (a, b, c) {
-//     return m.html(
-//         m.script("var x = 10"),
-//         m.head({ select: true },
-//             m.call(f2, a, b, c)
-//         ),
-//         m.EACH(abc, obj => {
-//             m.
-//         }),
-//         m.IF(xxx.gt(10),
-//             abc,
-//             efg
-//         )
-//         m.head(m.t("class='1234' yes='bad' select"),
-//             m.text("string, string, string")
-//         )
-//     )
-// })
-//
-// // call state with it
-// // server side rendering.
-//
-// html(
-//     h('goodness')
-// )
