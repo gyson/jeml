@@ -3,6 +3,11 @@
   "version": "0.0.5",
   "description": "Javascript-Enhanced Markup Language",
   "main": "index.js",
+  "keywords": [
+    "jeml",
+    "template",
+    "html"
+  ],
   "scripts": {
     "test": "node test",
     "bench": "node bench/bench"
@@ -20,12 +25,9 @@
   "devDependencies": {
     "benchmark": "^1.0.0",
     "dot": "^1.0.3",
-    "ect": "^0.5.9",
     "ejs": "^2.3.1",
-    "gulp": "^3.8.11",
     "handlebars": "^3.0.3",
     "jade": "^1.11.0",
-    "js-beautify": "^1.5.5",
     "markdown": "^0.5.0",
     "react": "^0.13.3",
     "tape": "^4.0.0"
