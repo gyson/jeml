@@ -1,7 +1,6 @@
 'use strict';
 
 var jeml = require('..')
-var beautify = require('js-beautify')
 
 var html = jeml`{def name}
 
@@ -18,7 +17,7 @@ var html = jeml`{def name}
 
 `
 
-console.log(beautify.html(html('nice')))
+console.log(html('nice'))
 
 // result:
 /*

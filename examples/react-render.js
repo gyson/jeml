@@ -13,14 +13,12 @@ class Name extends React.Component {
 }
 
 var html = jeml`{def id}
-
 <div id="{= id}">
     {> ${React.renderToString(e(Name, null))}}
 </div>
-
 `
 
-console.log(beautify.html(html('react-node')))
+console.log(html('react-node'))
 
 // result:
 /*

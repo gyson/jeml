@@ -4,6 +4,13 @@ var jeml = require('..')
 
 var comment = jeml`{def name}
 
+    {* this is comment}
+
+    {*
+        this is comment
+        this is comment
+    }
+
     ${''/* this is comment */}
 
     ${'this is comment', ''}
