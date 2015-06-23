@@ -3,15 +3,6 @@
 var test = require('tape')
 var jeml = require('./index')
 
-//
-// {def a, b, c}
-// it should only defined at the very beginning
-//
-// {def}
-// {def x}
-// {def x, y}
-// {def x, y, z}
-//
 test('{def block}', function (t) {
     var fn, result, expected
 
@@ -38,9 +29,49 @@ test('{def block}', function (t) {
     t.end()
 })
 
-test('${ block }', function (t) {
+// escaped
+test('{= escaped}', function (t) {
     var fn, result, expected
 
+    fn = jeml`{def name}
+        {"hello," + name}
+    `
+    result = fn("ggyy").replace(/ /g, '')
+    expected = 'hello,ggyy'
+    t.equal(result, expected)
+
+    fn = jeml`
+        {= "><'"}
+    `
+    result = fn().replace(/ /g, '')
+    expected = '&gt;&lt;&#39;'
+    t.equal(result, expected)
+
+    t.end()
+})
+
+// unescaped
+test('{> unescaped}', function (t) {
+    var fn, result, expected
+
+    fn = jeml`
+        {> "><'"}
+    `
+    result = fn().replace(/ /g, '')
+    expected = '><\''
+    t.equal(result, expected)
+
+    var f1 = jeml`{def name}
+        <hello> {name} </hello>
+    `
+    var f2 = jeml`
+        <strong>{> ${f1}("okk")}</strong>
+    `
+    result = f2().replace(/ /g, '')
+    expected = '<strong><hello>okk</hello></strong>'
+    t.equal(result, expected)
+
+    // ${exp} is the same as {> ${exp}}
     fn = jeml`
         <p> ${ 'hello' } </p>
     `
@@ -52,20 +83,13 @@ test('${ block }', function (t) {
         ${ "&><'" }
     `
     result = fn().replace(/ /g, '')
-    expected = '&amp;&gt;&lt;&#39;'
+    expected = '&><\''
     t.equal(result, expected)
 
     t.end()
 })
 
-//
-// {if exp}      // if (exp) {
-// {else if exp} // } else if (exp) {
-// {else if exp} // } else if (exp) {
-// {else}        // } else {
-// {end}         // => }
-//
-test('{if block}', function (t) {
+test('{if exp}', function (t) {
     var fn, result, expected
 
     fn = jeml`
@@ -106,17 +130,11 @@ test('{if block}', function (t) {
     t.end()
 })
 
-//
-// {each name in abc}       // for (var i = 0; i < xxx; i++) {
-// {each key, value in abc} // ...
-// {end}                    // }
-// {each name in abc if name > 10} // for (var i = 0; i < xx; i++) { if(exp) {continue}
-//
-test('each block', function (t) {
+test('{each val in exp}', function (t) {
     var fn, result, expected
 
     fn = jeml`
-        {each name in ${[1, 2, 3, 4]}}
+        {each name in [1, 2, 3, 4]}
             <p>{name}</p>
         {end}
     `
@@ -136,60 +154,21 @@ test('each block', function (t) {
     t.end()
 })
 
-// escaped
-test('{expression}', function (t) {
+test('{assert exp, message}', function (t) {
     var fn, result, expected
 
-    fn = jeml`{def name}
-        {"hello," + name}
-    `
-    result = fn("ggyy").replace(/ /g, '')
-    expected = 'hello,ggyy'
-    t.equal(result, expected)
-
-    fn = jeml`
-        { "><'"}
-    `
-    result = fn().replace(/ /g, '')
-    expected = '&gt;&lt;&#39;'
-    t.equal(result, expected)
+    //
 
     t.end()
 })
 
-// unescaped
-test('raw block', function (t) {
+test('{js statement}', function (t) {
     var fn, result, expected
-
-    fn = jeml`
-        {raw "><'"}
-    `
-    result = fn().replace(/ /g, '')
-    expected = '><\''
-    t.equal(result, expected)
-
-    var f1 = jeml`{def name}
-        <hello> {name} </hello>
-    `
-    var f2 = jeml`
-        <strong>{raw ${f1}("okk")}</strong>
-    `
-    result = f2().replace(/ /g, '')
-    expected = '<strong><hello>okk</hello></strong>'
-    t.equal(result, expected)
 
     t.end()
 })
 
-
-// {script ${function (global) { ... }}}
-// =>
-// bad ? <script> var global = (new Function('return this')()); ... </script> // problematic ?
-// or ?
-// perfered <script> ;(function(global) { ... }(new Function('return this')())); <script>
-
-// throw exception if found '</script>' ???
-test('{script block}', function (t) {
+test('{script inline}', function (t) {
     var fn, result, expected
 
     fn = jeml`
@@ -204,10 +183,7 @@ test('{script block}', function (t) {
     t.end()
 })
 
-//
-// {style ${`body { background: #ffffff }`}} // minify ?
-//
-test('{style block}', function (t) {
+test('{style inline}', function (t) {
     var fn, result, expected
 
     try {
