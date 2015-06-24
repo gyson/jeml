@@ -1,15 +1,6 @@
-# JEML
-Javascript-embedded Markup Language
+# JEML: Javascript Enhanced Markup Language.
 
-## Introduction
-
-Parse Jade-like syntax (without identation) and generator
-pure javascript code with CommonJS module for usage. You can just
-`require('/path/to/generated.js')` it for server side. Use
-browserify if you want to use it in client side.
-
-You may want to use [gulp-jeml](https://github.com/gyson/gulp-jeml)
-to generate js files.
+Template engine powered by tagged template strings.
 
 ## Installation
 
@@ -17,16 +8,19 @@ to generate js files.
 $ npm install jeml
 ```
 
-## Goodness
+## Usage
 
-* High performance. Based on [benchmark](https://github.com/gyson/jeml/blob/master/bench/README.md),
-it's a little bit slower than doT, but much faster than Jade, ejs, and handlebars.
+```js
+var jeml = require('jeml')
+var assert = require('assert')
 
-## Note
+var page = jeml`{def name}
+<p> Hello, {= name}! </p>
+`
+assert(typeof page === 'function')
+page('jeml') // => "<p> Hello, jeml! </p>"
+```
 
-* It's recommended to use Javascript Syntax Highlight to get better look.
-* Since generated file is pure javascript, you can use tools to minify or beautify it.
+## License
 
-## Example
-
-check [jeml-example](https://github.com/gyson/jeml-example) for usage.
+MIT
