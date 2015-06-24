@@ -13,11 +13,3 @@ var html = jeml`{def name}
 `
 
 console.log(html('nice'))
-
-// result:
-/*
-<p> good, nice </p>
-<script>
-    var okk = 123;
-</script>
-*/

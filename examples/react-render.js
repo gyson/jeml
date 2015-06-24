@@ -2,7 +2,6 @@
 
 var jeml = require('..')
 var React = require('react')
-var beautify = require('js-beautify')
 
 var e = React.createElement
 
@@ -19,10 +18,3 @@ var html = jeml`{def id}
 `
 
 console.log(html('react-node'))
-
-// result:
-/*
-<div id="react-node">
-    <p data-reactid=".d2djuygsu8" data-react-checksum="-584248826">this is from react</p>
-</div>
-*/
