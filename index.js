@@ -55,7 +55,7 @@ function jeml(strings) {
     var inputs = [].slice.call(arguments, 1)
 
     var stack = new Error().stack.split('\n')[2]
-    var line = ~~(/:(\d+):\d+/.exec(stack)[1]) - 1
+    var lineNum = ~~(/:(\d+):\d+/.exec(stack)[1]) - 1
 
     var str  = '}' + strings.raw[0]
     for (var i = 1; i < arguments.length; i++) {
@@ -189,28 +189,26 @@ function jeml(strings) {
 
     try {
         var fn = (new Function(ESCAPE, INPUTS, JEML_ASSERT, `'use strict';return ${body}`)(escape, inputs, assert))
-        return (new Function('fn', 'stack', 'lineNum', `
-            function _jeml_ignore_(${args}) {
-                try {
-                    return fn.apply(this, arguments)
-                } catch (e) {
-                    if (e && typeof e.stack === 'string') {
-                        e.stack = e.stack.split('\\n').map(function (line) {
-                            if (/${nameId}/.exec(line)) {
-                                var ret = (/<anonymous>:(\\d+):(\\d+)/.exec(line))
-                                return stack.replace(/:\\d+:\\d+/, ':' + (~~ret[1] + lineNum) + ':' + ret[2])
-                            }
-                            return line
-                        }).filter(function (line) {
-                            return !(/_jeml_ignore_/.exec(line))
-                        }).join('\\n')
-                    }
-                    throw e // jeml runtime error
+        function _jeml_ignore_() {
+            try {
+                return fn.apply(this, arguments)
+            } catch (e) {
+                if (e && typeof e.stack === 'string') {
+                    e.stack = e.stack.split('\n').map(function (line) {
+                        if (line.indexOf(nameId) !== -1) {
+                            var ret = (/<anonymous>:(\d+):(\d+)/.exec(line))
+                            return stack.replace(/:\d+:\d+/, ':' + (~~ret[1] + lineNum) + ':' + ret[2])
+                        }
+                        return line
+                    }).filter(function (line) {
+                        return !(/_jeml_ignore_/.exec(line))
+                    }).join('\n')
                 }
-            };
-            _jeml_ignore_.toString = fn.toString.bind(fn);
-            return _jeml_ignore_;
-        `)(fn, stack, line))
+                throw e // jeml runtime error
+            }
+        };
+        _jeml_ignore_.toString = fn.toString.bind(fn);
+        return _jeml_ignore_;
     } catch (e) {
         e.message += ` while compiling jeml template`
         e.body = body

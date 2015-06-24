@@ -2,7 +2,6 @@
 
 var fs = require('fs')
 var path = require('path')
-var beautify = require('js-beautify')
 var Benchmark = require('benchmark')
 
 var dot = require('dot')

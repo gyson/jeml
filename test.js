@@ -7,23 +7,18 @@ test('{def block}', function (t) {
     var fn, result, expected
 
     fn = jeml`{def x, y, z}
-        {x} {y} {z}
+        {= x} {= y} {= z}
     `
-    result = fn(1, 2, 3).replace(/ /g, '')
+    result = fn(1, 2, 3).replace(/\s+/g, '')
     expected = '123'
     t.equal(result, expected)
 
     // should throw
     fn = jeml`{def name}
-        <p> hello, { name } </p>
+        <p> hello, {= name} </p>
     `
-    result = fn('okkk').replace(/ /g, '')
+    result = fn('okkk').replace(/\s+/g, '')
     expected = '<p>hello,okkk</p>'
-    t.equal(result, expected)
-
-    fn = jeml`{def a, b, c, d, e, f}`
-    result = fn.length
-    expected = 6
     t.equal(result, expected)
 
     t.end()
@@ -34,16 +29,16 @@ test('{= escaped}', function (t) {
     var fn, result, expected
 
     fn = jeml`{def name}
-        {"hello," + name}
+        {= "hello," + name}
     `
-    result = fn("ggyy").replace(/ /g, '')
+    result = fn("ggyy").replace(/\s+/g, '')
     expected = 'hello,ggyy'
     t.equal(result, expected)
 
     fn = jeml`
         {= "><'"}
     `
-    result = fn().replace(/ /g, '')
+    result = fn().replace(/\s+/g, '')
     expected = '&gt;&lt;&#39;'
     t.equal(result, expected)
 
@@ -57,17 +52,17 @@ test('{> unescaped}', function (t) {
     fn = jeml`
         {> "><'"}
     `
-    result = fn().replace(/ /g, '')
+    result = fn().replace(/\s+/g, '')
     expected = '><\''
     t.equal(result, expected)
 
     var f1 = jeml`{def name}
-        <hello> {name} </hello>
+        <hello> {= name} </hello>
     `
     var f2 = jeml`
         <strong>{> ${f1}("okk")}</strong>
     `
-    result = f2().replace(/ /g, '')
+    result = f2().replace(/\s+/g, '')
     expected = '<strong><hello>okk</hello></strong>'
     t.equal(result, expected)
 
@@ -75,14 +70,14 @@ test('{> unescaped}', function (t) {
     fn = jeml`
         <p> ${ 'hello' } </p>
     `
-    result = fn().replace(/ /g, '')
+    result = fn().replace(/\s+/g, '')
     expected = '<p>hello</p>'
     t.equal(result, expected)
 
     fn = jeml`
         ${ "&><'" }
     `
-    result = fn().replace(/ /g, '')
+    result = fn().replace(/\s+/g, '')
     expected = '&><\''
     t.equal(result, expected)
 
@@ -97,7 +92,7 @@ test('{if exp}', function (t) {
             okk
         {end}
     `
-    result = fn().replace(/ /g, '')
+    result = fn().replace(/\s+/g, '')
     expected = 'okk'
     t.equal(result, expected)
 
@@ -108,7 +103,7 @@ test('{if exp}', function (t) {
             okk
         {end}
     `
-    result = fn().replace(/ /g, '')
+    result = fn().replace(/\s+/g, '')
     expected = 'okk'
     t.equal(result, expected)
 
@@ -123,7 +118,7 @@ test('{if exp}', function (t) {
             bad
         {end}
     `
-    result = fn().replace(/ /g, '')
+    result = fn().replace(/\s+/g, '')
     expected = 'okk'
     t.equal(result, expected)
 
@@ -135,19 +130,19 @@ test('{each val in exp}', function (t) {
 
     fn = jeml`
         {each name in [1, 2, 3, 4]}
-            <p>{name}</p>
+            <p>{= name}</p>
         {end}
     `
-    result = fn().replace(/ /g, '')
+    result = fn().replace(/\s+/g, '')
     expected = '<p>1</p><p>2</p><p>3</p><p>4</p>'
     t.equal(result, expected)
 
     fn = jeml`
         {each index, value in ${['hello', 'good', 'bye']}}
-            <p>{index} : {value}</p>
+            <p>{= index} : {= value}</p>
         {end}
     `
-    result = fn().replace(/ /g, '')
+    result = fn().replace(/\s+/g, '')
     expected = '<p>0:hello</p><p>1:good</p><p>2:bye</p>'
     t.equal(result, expected)
 
@@ -176,7 +171,7 @@ test('{script inline}', function (t) {
         {script ${0,`var x = 10;var y = 20;`}}
     `
     // console.log(fn.toString())
-    result = fn().replace(/ /g, '')
+    result = fn().replace(/\s+/g, '')
     expected = 'hello<script>varx=10;vary=20;</script>'
     t.equal(result, expected)
 
@@ -191,7 +186,7 @@ test('{style inline}', function (t) {
         {style ${0,`body {background: red}`}}
     `
     } catch (e) {console.log(e.raw); throw e}
-    result = fn().replace(/ /g, '')
+    result = fn().replace(/\s+/g, '')
     expected = '<style>body{background:red}</style>'
     t.equal(result, expected)
 
