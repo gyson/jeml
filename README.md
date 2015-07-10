@@ -1,4 +1,4 @@
-# JEML: Javascript Enhanced Markup Language.
+# jeml
 
 Template engine powered by tagged template strings.
 

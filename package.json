@@ -1,7 +1,7 @@
 {
   "name": "jeml",
-  "version": "0.0.5",
-  "description": "Javascript-Enhanced Markup Language",
+  "version": "0.1.0",
+  "description": "Javascript Enhanced Markup Language",
   "main": "index.js",
   "keywords": [
     "jeml",
