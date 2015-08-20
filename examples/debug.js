@@ -6,9 +6,9 @@ var jeml = require('..')
 
 try {
 var f1 = jeml`{def name, number}
-    {= name}: {= number}
+    ${'= name'}: {= number}
 
-    {if number > 10}
+    ${'if number > 10'}
     ${''/* miss `{end}` here */}
 `
 } catch (e) {

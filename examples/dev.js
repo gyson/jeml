@@ -2,6 +2,12 @@
 
 var jeml = require('..')
 
+
+jeml`${'input name, abcd'}
+
+`
+
+
 var f = jeml`{def a, b, c}
     {* I am comment
 
@@ -19,6 +25,10 @@ var f = jeml`{def a, b, c}
     <p> {= name} </p>
 {end}
 
+{> ${name}(a, b, c)}
+
+angular js template ?
+
 {if a}
     hello
     <hello abc='hello'> </hello>
@@ -29,7 +39,21 @@ var f = jeml`{def a, b, c}
     bad
 {end}
 
+${'raw expression'}
+
+${'= expression'}
+
+${''}
+
 {> ${sum}(a, b, c)}
+
+${'if x > 10'}
+
+${'end'}
+
+${{call: sum, args: 'a, b, c'}}
+
+${{ call: sum, args: 'a, b, c' }}
 
 `
 

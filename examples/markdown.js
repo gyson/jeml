@@ -10,6 +10,8 @@ This is description.
 
 #### header
 
+${{ raw: fs.readFileSync() }}
+
 I am body
 `
 

@@ -11,10 +11,15 @@ class Name extends React.Component {
     }
 }
 
-var html = jeml`{def id}
-<div id="{= id}">
-    {> ${React.renderToString(e(Name, null))}}
+var html = jeml`
+<div>
+    ${{ raw: React.renderToString(e(Name)) }}
 </div>
+`
+
+var html2 = jeml`
+
+    ${{ call: html, args: 'a, b, c, d' }}
 `
 
 console.log(html('react-node'))

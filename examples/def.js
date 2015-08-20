@@ -4,7 +4,7 @@ var jeml = require('..')
 var assert = require('assert')
 
 // no define
-var page = jeml`{def name}
+var page = jeml`{def name} ${': name, number, okk'}
 <p> Hello, {= name}! </p>
 `
 assert(typeof page === 'function')

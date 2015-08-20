@@ -25,7 +25,7 @@ test('{def block}', function (t) {
 })
 
 // escaped
-test('{= escaped}', function (t) {
+test('${escape expression}', function (t) {
     var fn, result, expected
 
     fn = jeml`{def name}
@@ -46,7 +46,8 @@ test('{= escaped}', function (t) {
 })
 
 // unescaped
-test('{> unescaped}', function (t) {
+// {unescape: }
+test('{raw unescaped}', function (t) {
     var fn, result, expected
 
     fn = jeml`
@@ -117,7 +118,20 @@ test('{if exp}', function (t) {
         {else}
             bad
         {end}
+
+        ${'if x.name'}
+            ${'each abc in x.name'}
+
+            ${'end'}
+        ${'else'}
+            <p> abcdefg </p>
+        ${'end'}
+
     `
+
+    ${'if x.name = 123'}
+
+
     result = fn().replace(/\s+/g, '')
     expected = 'okk'
     t.equal(result, expected)
@@ -132,6 +146,10 @@ test('{each val in exp}', function (t) {
         {each name in [1, 2, 3, 4]}
             <p>{= name}</p>
         {end}
+
+        ${'each name in abc'}
+            ${'= name'}
+        ${'end'}
     `
     result = fn().replace(/\s+/g, '')
     expected = '<p>1</p><p>2</p><p>3</p><p>4</p>'
@@ -144,50 +162,6 @@ test('{each val in exp}', function (t) {
     `
     result = fn().replace(/\s+/g, '')
     expected = '<p>0:hello</p><p>1:good</p><p>2:bye</p>'
-    t.equal(result, expected)
-
-    t.end()
-})
-
-test('{assert exp, message}', function (t) {
-    var fn, result, expected
-
-    //
-
-    t.end()
-})
-
-test('{js statement}', function (t) {
-    var fn, result, expected
-
-    t.end()
-})
-
-test('{script inline}', function (t) {
-    var fn, result, expected
-
-    fn = jeml`
-        hello
-        {script ${0,`var x = 10;var y = 20;`}}
-    `
-    // console.log(fn.toString())
-    result = fn().replace(/\s+/g, '')
-    expected = 'hello<script>varx=10;vary=20;</script>'
-    t.equal(result, expected)
-
-    t.end()
-})
-
-test('{style inline}', function (t) {
-    var fn, result, expected
-
-    try {
-    fn = jeml`
-        {style ${0,`body {background: red}`}}
-    `
-    } catch (e) {console.log(e.raw); throw e}
-    result = fn().replace(/\s+/g, '')
-    expected = '<style>body{background:red}</style>'
     t.equal(result, expected)
 
     t.end()

@@ -2,16 +2,16 @@
 
 var jeml = require('..')
 
-var fn = jeml`{def grade}
-    {if grade > 80}
+var fn = jeml`${'def grade'}
+    ${'if grade > 80'}
         <p> Great! </p>
-    {else if grade > 70}
+    ${'else if grade > 70'}
         <p> Good! </p>
-    {else if grade > 60}
+    ${'else if grade > 60'}
         <p> Okk! </p>
-    {else}
+    ${'else'}
         <p> Bad! </p>
-    {end}
+    ${'end'}
 `
 
 console.log(fn(88))
